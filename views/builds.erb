@@ -1,16 +1,21 @@
 <html>
   <head>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="/css/master.css" type="text/css" media="screen" title="no title" charset="utf-8">
   </head>
 
   <body>
-    <div class="topheader">Selenium CI</div>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="container"><h3><a href="/">Selenium CI</a></h3></div>
+      </div>
+    </div>
     <div class="container">
       <% @builds.each do |rev, subs| %>
-      <h1>
+      <h3>
         <a class="build href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a>
         <span class="author"><%= @users[rev] %></span>
-      </h1>
+      </h3>
 
       <table>
         <thead>
@@ -21,8 +26,11 @@
         </thead>
         <tbody>
           <% subs.sort_by { |e| e['display_name'] }.each do |build| %>
-          <tr>
-            <td><a href="<%= build['url'] %>"><%= build['display_name'] %></a></td>
+          <tr class="name">
+            <td>
+              <a href="<%= build['url'] %>"><%= build['display_name'] %></a>
+            </td>
+
             <% if build['state'].to_s == 'building' %>
               <td class="state building"><img src="img/ajax-loader.gif" class="spinner">building</td>
             <% else %>
