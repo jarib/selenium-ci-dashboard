@@ -20,7 +20,7 @@
             <tr>
               <td><a href="<%= build['url'] %>"><%= build['display_name'] %></a></td>
               <% if build['state'].to_s == 'building' %>
-                <td class="state building">building <img src="img/ajax-loader.gif" class="spinner"></td>
+                <td class="state building"><img src="img/ajax-loader.gif" class="spinner">building</td>
               <% else %>
                 <td class="state <%= build['state'] %>"><%= build['state'] %></td>
               <% end %>

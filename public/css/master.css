@@ -27,4 +27,4 @@ td.success {background-color: #D1EED1;border-color: #BFE7BF;}
 td.unstable {background-color: #FDDFDE;}
 td.aborted {background-color: #eee;}
 .topheader{padding-top: 10px; padding-bottom:10px;padding-left:20px;margin-bottom:20px;margin-top:20px;border-bottom:1px solid #DDD;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:60px;font-weight:bold;letter-spacing:-0.05em;color:#111;}
-.spinner{ height: 10px; float: right}
+.spinner{height: 10px; float: right; margin-top: 0.3em;}
