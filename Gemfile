@@ -4,5 +4,6 @@ gem "em-http-request"
 gem "em-mongo"
 gem "json"
 gem "sinatra"
-gem "mongo"
+gem "mongo", '1.5.2'
+gem "bson_ext", '1.5.2'
 
