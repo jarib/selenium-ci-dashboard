@@ -15,7 +15,7 @@ class Poller
     :redirects => 10
   }
 
-  INTERVAL = 60*3
+  INTERVAL = 60*2
 
   def initialize(host, log)
     @host = host
