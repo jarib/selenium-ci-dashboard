@@ -12,7 +12,14 @@ class App < Sinatra::Base
 
   get "/" do
     builds = revs.map { |r| db.find(:revision => r).to_a }.flatten
-    @builds = builds.group_by { |e| e['revision'] }.sort_by { |rev, _| rev }.reverse
+
+    @users = {}
+    @builds = builds.group_by do |e|
+      rev = e['revision']
+      @users[rev] = e['user']
+
+      rev
+    end.sort_by { |rev, _| rev }.reverse
 
     erb :builds
   end

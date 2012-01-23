@@ -10,6 +10,7 @@
     .container{width:940px;margin-left:auto;margin-right:auto;zoom:1;}.container:before,.container:after{display:table;content:"";zoom:1;}
     .container:after{clear:both;}
     a{color:#0069d6;text-decoration:none;line-height:inherit;font-weight:inherit;}a:hover{color:#00438a;text-decoration:underline;}
+    a.build{padding-right: 20px}
     p{font-size:13px;font-weight:normal;line-height:18px;margin-bottom:9px;}p small{font-size:11px;color:#bfbfbf;}
     h1,h2,h3,h4,h5,h6{font-weight:bold;color:#404040;}h1 small,h2 small,h3 small,h4 small,h5 small,h6 small{color:#bfbfbf;}
     h1{margin-bottom:18px;font-size:30px;line-height:36px;}h1 small{font-size:18px;}
@@ -28,6 +29,7 @@
     td.unstable {background-color: #FDDFDE;}
     td.aborted {background-color: #eee;}
     .topheader{padding-bottom:10px;padding-left:20px;margin-bottom:20px;margin-top:20px;border-bottom:1px solid #DDD;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:60px;font-weight:bold;letter-spacing:-0.05em;color:#111;}
+    .spinner{ margin-left: 10px; height: 10px;}
     </style>
   </head>
 
@@ -35,7 +37,7 @@
     <div class="topheader">Selenium CI</div>
     <div class="container">
       <% @builds.each do |rev, subs| %>
-      <h1><a href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a></h1>
+      <h1><a class="build href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a><%= @users[rev] %></h1>
         <table>
           <thead>
             <tr class="header">
@@ -47,7 +49,11 @@
             <% subs.sort_by { |e| e['display_name'] }.each do |build| %>
             <tr>
               <td><a href="<%= build['url'] %>"><%= build['display_name'] %></a></td>
-              <td class="<%= build['state'] %>"><%= build['state'] %></td>
+              <% if build['state'] == :building %>
+                <td class="state building">building <img src="img/ajax-loader.gif" class="spinner"></td>
+              <% else %>
+                <td class="state <%= build['state'] %>"><%= build['state'] %></td>
+              <% end %>
             </tr>
             <% end %>
           </tbody>
