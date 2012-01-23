@@ -16,7 +16,7 @@ class App < Sinatra::Base
     @users = {}
     @builds = builds.group_by do |e|
       rev = e['revision']
-      @users[rev] = e['user']
+      @users[rev] ||= e['user']
 
       rev
     end.sort_by { |rev, _| rev }.reverse
