@@ -7,27 +7,31 @@
     <div class="topheader">Selenium CI</div>
     <div class="container">
       <% @builds.each do |rev, subs| %>
-      <h1><a class="build href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a><%= @users[rev] %></h1>
-        <table>
-          <thead>
-            <tr class="header">
-              <th>Name</th>
-              <th>State</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% subs.sort_by { |e| e['display_name'] }.each do |build| %>
-            <tr>
-              <td><a href="<%= build['url'] %>"><%= build['display_name'] %></a></td>
-              <% if build['state'].to_s == 'building' %>
-                <td class="state building"><img src="img/ajax-loader.gif" class="spinner">building</td>
-              <% else %>
-                <td class="state <%= build['state'] %>"><%= build['state'] %></td>
-              <% end %>
-            </tr>
+      <h1>
+        <a class="build href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a>
+        <span class="author"><%= @users[rev] %></span>
+      </h1>
+
+      <table>
+        <thead>
+          <tr class="header">
+            <th>Name</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% subs.sort_by { |e| e['display_name'] }.each do |build| %>
+          <tr>
+            <td><a href="<%= build['url'] %>"><%= build['display_name'] %></a></td>
+            <% if build['state'].to_s == 'building' %>
+              <td class="state building"><img src="img/ajax-loader.gif" class="spinner">building</td>
+            <% else %>
+              <td class="state <%= build['state'] %>"><%= build['state'] %></td>
             <% end %>
-          </tbody>
-        </table>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
       <% end %>
     </div>
   </body>
