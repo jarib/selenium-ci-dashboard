@@ -24,12 +24,13 @@
     table td{vertical-align:top;border-top:1px solid #ddd;}
     table tbody th{border-top:1px solid #ddd;vertical-align:top;}
     footer{margin-top:17px;padding-top:17px;border-top:1px solid #eee;}
+    td.state { width: 10em; }
     td.building {background-color: #FDF5D9;}
     td.success {background-color: #D1EED1;border-color: #BFE7BF;}
     td.unstable {background-color: #FDDFDE;}
     td.aborted {background-color: #eee;}
     .topheader{padding-bottom:10px;padding-left:20px;margin-bottom:20px;margin-top:20px;border-bottom:1px solid #DDD;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:60px;font-weight:bold;letter-spacing:-0.05em;color:#111;}
-    .spinner{ margin-left: 10px; height: 10px;}
+    .spinner{ height: 10px; float: right}
     </style>
   </head>
 
@@ -49,7 +50,7 @@
             <% subs.sort_by { |e| e['display_name'] }.each do |build| %>
             <tr>
               <td><a href="<%= build['url'] %>"><%= build['display_name'] %></a></td>
-              <% if build['state'] == :building %>
+              <% if build['state'].to_s == 'building' %>
                 <td class="state building">building <img src="img/ajax-loader.gif" class="spinner"></td>
               <% else %>
                 <td class="state <%= build['state'] %>"><%= build['state'] %></td>
