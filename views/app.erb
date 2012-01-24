@@ -2,10 +2,9 @@
 <html>
   <head>
     <title>Selenium CI</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css" media="screen" title="no title">
-    <link rel="stylesheet" href="/css/master.css" type="text/css" media="screen" title="no title">
-    <link rel="stylesheet" href="/css/github.css" type="text/css" media="screen" title="no title">
-
+    <% settings.styles.each do |href| %>
+      <link rel="stylesheet" href="<%= href %>" type="text/css" media="screen">
+    <% end %>
   </head>
   <body>
     <!-- github ribbon -->
@@ -13,7 +12,7 @@
 
     <div class="topbar">
       <div class="topbar-inner">
-        <div class="container">
+        <div class="container-fluid">
           <h3><a href="/">Selenium CI</a></h3>
         </div>
       </div>
@@ -25,12 +24,16 @@
       </div>
     </div>
 
-    <div class="container">
-      <%= yield %>
+    <div id="main" class="container-fluid">
+      <div class="sidebar"></div>
+      <div class="content"></div>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/jquery.tablesorter.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/mustache.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/sammy-latest.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/sammy.mustache.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/app.js" type="text/javascript" charset="utf-8"></script>
   </body>
 </html>

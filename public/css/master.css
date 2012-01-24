@@ -17,3 +17,4 @@ a.text-aborted {color: #ffc40d;}
 .matrix-build { margin: 0; padding:0 ; list-style-type:none;}
 .author{color: #777; font-size: 20px;}
 #error-message { display: none};
+#revision-sidebar { font-size: 30px; color: green; }

@@ -2,67 +2,46 @@ require 'sinatra/base'
 require 'mongo'
 require './build'
 require 'pp'
+require 'json'
 
 class App < Sinatra::Base
   set :db, Mongo::Connection.new.db("selenium").collection("builds")
   set :views, File.expand_path("../views", __FILE__)
+  set :styles, [
+    "/css/bootstrap.min.css",
+    "/css/master.css"
+    ].map { |e| "#{e}?#{rand 1000}" }
 
   configure do
     db.ensure_index 'revision'
   end
 
   get "/" do
-    redirect "/revs"
+    erb :app
   end
 
-  get "/revs" do
-    builds = revs.map { |r| db.find(:revision => r).to_a }.flatten
-
-    @users = {}
-    @builds = builds.group_by do |e|
-      rev = e['revision']
-      @users[rev] ||= e['user']
-
-      rev
-    end.sort_by { |rev, _| rev }.reverse
-
-    erb :revs
+  get "/revs.json" do
+    content_type :json
+    { :revisions => fetch_revision_list }.to_json
   end
 
-  get "/matrix/:rev" do |rev|
-    builds = []
+  get "/builds/:revision.json" do |revision|
+    content_type :json
 
-    @revision = rev
-    builds = db.find(:revision => @revision).to_a
+    builds = db.find(:revision => revision).
+                map { |e| BuildView.new e }.
+                sort_by { |b| b.name }
 
-    views = builds.map { |e| BuildView.new(e) }
+    matrix = matrix_from(builds)
 
-    @rows = []
-    @columns = []
-
-    views.each do |view|
-      rn = view.row_name
-      cn = view.column_name
-      @rows << rn unless rn == BuildView::NA
-      @columns << cn unless cn == BuildView::NA
-    end
-
-    @rows    = @rows.sort.uniq
-    @columns = @columns.sort.uniq
-
-    # make sure N/A comes first
-    @rows.unshift BuildView::NA
-    @columns.unshift BuildView::NA
-
-    @builds = views.group_by do |view|
-      [view.row_name, view.column_name]
-    end
-
-    @broken = what_you_broke(views)
-
-    # @builds.each { |k,v| p k => v.map { |e| e.name }  }
-
-    erb :matrix, :layout => false
+    {
+      :builds         => builds,
+      :revision       => revision,
+      :row_headers    => matrix.row_headers,
+      :column_headers => matrix.column_headers,
+      :rows           => matrix.rows,
+      :broken         => what_you_broke(builds)
+    }.to_json
   end
 
   helpers do
@@ -80,6 +59,24 @@ class App < Sinatra::Base
 
     def db
       settings.db
+    end
+
+    def fetch_revision_list
+      revisions = revs(50)
+      builds = revisions.map { |r| db.find(:revision => r).to_a }.flatten
+
+      users = {}
+      building = {}
+      builds.each do |b|
+        rev = b['revision']
+
+        building[rev] ||= (b['state'].to_sym == :building)
+        users[rev] ||= b['user']
+      end
+
+      revisions.sort.reverse.map do |r|
+        {:revision => r, :user => users[r], :building => building[r] }
+      end
     end
 
     def what_you_broke(builds)
@@ -104,6 +101,61 @@ class App < Sinatra::Base
         str.join(', ')
       end
     end
+
+    def matrix_from(builds)
+      MatrixView.new(builds)
+    end
+  end
+
+  class MatrixView
+    def initialize(builds)
+      @builds = builds
+
+      @row_headers    = []
+      @column_headers = []
+
+      builds.each do |build|
+        rn = build.row_name
+        cn = build.column_name
+        @row_headers << rn unless rn == BuildView::NA
+        @column_headers << cn unless cn == BuildView::NA
+      end
+
+      @row_headers    = @row_headers.sort.uniq
+      @column_headers = @column_headers.sort.uniq
+
+      # make sure N/A comes first
+      @row_headers.unshift BuildView::NA
+      @column_headers.unshift BuildView::NA
+
+      @grouped = builds.group_by { |b|
+        [b.row_name, b.column_name]
+      }
+    end
+
+    def row_headers
+      @row_headers.map { |e| {:name => e }}
+    end
+
+    def column_headers
+      @column_headers.map { |e| {:name => e }}
+    end
+
+    def rows
+      @row_headers.map { |name| row_for name }
+    end
+
+    private
+
+    def row_for(rname)
+      {
+        :name => rname,
+        :cells => @column_headers.map do |cname|
+          {:build => @grouped[[rname, cname]]}
+        end
+      }
+    end
+
   end
 
   class BuildView
@@ -113,8 +165,32 @@ class App < Sinatra::Base
       @data = data
     end
 
+    def as_json(opts = {})
+      {
+       :revision => revision,
+       :state    => state,
+       :params   => params.map { |k,v| {:key => k, :val => v} },
+       :failed   => failed?,
+       :building => building?,
+       :url      => url,
+       :name     => name
+      }
+    end
+
+    def to_json(*args)
+      as_json.to_json(*args)
+    end
+
     def failed?
       [:unstable, :failed].include? state.to_sym
+    end
+
+    def building?
+      state.to_sym == :building
+    end
+
+    def revision
+      @data['revision']
     end
 
     def state

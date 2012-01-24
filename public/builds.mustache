@@ -1,0 +1,74 @@
+<div class="container">
+  <h2 class="pull-right">
+    <a class="build" href="http://code.google.com/p/selenium/source/detail?r={{revision}}">r{{revision}}</a>
+  </h2>
+
+
+  {{#broken}}
+  <div class="alert-message error">
+    <p>Looks like <strong>{{broken}}</strong> is broken.</p>
+  </div>
+  {{/broken}}
+
+  <ul class="tabs">
+    <li id="matrix-tab"><a href="#/revision/{{revision}}/matrix">matrix</a></li>
+    <li id="list-tab"><a href="#/revision/{{revision}}/list">list</a></li>
+  </ul>
+
+  <table id="matrix" style="display:none;">
+    <thead>
+      <tr>
+        <th></th>
+        {{#column_headers}}
+          <th>{{name}}</th>
+        {{/column_headers}}
+      </tr>
+    </thead>
+    <tbody>
+      {{#rows}}
+        <tr>
+          <th>{{name}}</th>
+          {{#cells}}
+            <td>
+              <ul class="matrix-build">
+                {{#build}}
+                  <li>{{type}} <a class="text-{{state}}" href="{{url}}">{{state}}</a></li>
+                {{/build}}
+              </ul>
+            </td>
+          {{/cells}}
+        </tr>
+      {{/rows}}
+    </tbody>
+  </table>
+
+  <table id="list" style="display:none;">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>State</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#builds}}
+      <tr>
+        <td>
+          <a href="{{url}}">{{name}}</a>
+        </td>
+
+        {{#building}}
+          <td class="state building">
+            building
+            <img src="img/ajax-loader.gif" alt="building" class="spinner">
+          </td>
+        {{/building}}
+
+        {{^building}}
+          <td class="state {{state}}">{{state}}</td>
+        {{/building}}
+      </tr>
+      {{/builds}}
+    </tbody>
+  </table>
+
+</div>

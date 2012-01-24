@@ -1,0 +1,13 @@
+<div id="revision-sidebar">
+  <div>
+    {{#revisions}}
+    <p>
+      <span>r{{revision}}</span>
+      <span>{{user}}</span>
+      {{#building}}
+        <img src="img/ajax-loader.gif" alt="building" class="spinner">
+      {{/building}}
+    </p>
+    {{/revisions}}
+  </div>
+</div>
