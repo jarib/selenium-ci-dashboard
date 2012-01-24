@@ -1,3 +1,9 @@
+<% if @alert %>
+<div class="alert-message warning">
+  <p><strong>Ouch!</strong> <%= @alert %></p>
+</div>
+<% end %>
+
 <table class="matrix bordered-table" id="matrix-<%= @revision %>">
   <thead>
     <tr>

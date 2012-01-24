@@ -58,6 +58,8 @@ class App < Sinatra::Base
       [view.row_name, view.column_name]
     end
 
+    @alert = what_you_broke(views)
+
     # @builds.each { |k,v| p k => v.map { |e| e.name }  }
 
     erb :matrix, :layout => false
@@ -79,6 +81,24 @@ class App < Sinatra::Base
     def db
       settings.db
     end
+
+    def what_you_broke(builds)
+      counts = Hash.new(0)
+
+      builds.each do |view|
+        next unless view.failed?
+        view.params.each do |key, value|
+          next if key == "svnrevision"
+          counts[[key.downcase, value.downcase]] += 1
+        end
+      end
+
+      common = counts.select { |key, count| count == builds.size }.keys
+      if common.any?
+        broken = Hash[common]
+        "Looks like #{broken.inspect} is broken."
+      end
+    end
   end
 
   class BuildView
@@ -86,6 +106,10 @@ class App < Sinatra::Base
 
     def initialize(data)
       @data = data
+    end
+
+    def failed?
+      [:unstable, :failed].include? state.to_sym
     end
 
     def state
