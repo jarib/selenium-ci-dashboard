@@ -67,15 +67,18 @@ class App < Sinatra::Base
 
       users = {}
       building = {}
+      build_counts = Hash.new(0)
+
       builds.each do |b|
         rev = b['revision']
 
         building[rev] ||= (b['state'].to_sym == :building)
         users[rev] ||= b['user']
+        build_counts[rev] += 1
       end
 
       revisions.sort.reverse.map do |r|
-        {:revision => r, :user => users[r], :building => building[r] }
+        {:revision => r, :user => users[r], :building => building[r], :count => build_counts[r] }
       end
     end
 
@@ -173,7 +176,8 @@ class App < Sinatra::Base
        :failed   => failed?,
        :building => building?,
        :url      => url,
-       :name     => name
+       :name    => name,
+       :type    => type
       }
     end
 
@@ -198,7 +202,7 @@ class App < Sinatra::Base
     end
 
     def type
-      stringify(params['type'])
+      stringify(params['test_type'])
     end
 
     def name
