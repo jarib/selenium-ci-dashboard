@@ -1,0 +1,40 @@
+<% @builds.each do |rev, subs| %>
+  <div class="build">
+    <h2 class="pull-right">
+      <small><%= @users[rev] %></small>
+      <a class="build" href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a>
+    </h2>
+
+    <ul class="tabs" data-rev="<%= rev %>">
+      <li class="active"><a>list</a></li>
+      <li><a>matrix</a></li>
+    </ul>
+
+    <table class="revs" id="revs-<%= rev %>">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>State</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% subs.sort_by { |e| e['display_name'] }.each do |build| %>
+        <tr>
+          <td>
+            <a href="<%= build['url'] %>"><%= build['display_name'] %></a>
+          </td>
+
+          <% if build['state'].to_s == 'building' %>
+            <td class="state building">
+              building
+              <img src="img/ajax-loader.gif" alt="building" class="spinner">
+            </td>
+          <% else %>
+            <td class="state <%= build['state'] %>"><%= build['state'] %></td>
+          <% end %>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

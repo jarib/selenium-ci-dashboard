@@ -1,9 +1,19 @@
 body { padding-top: 50px; }
-th { width: 80%;}
-td.building {background-color:#ddf4fb;border-color:#c6edf9;}
-td.success {background-color:#d1eed1;border-color:#bfe7bf;}
-td.unstable {background-color:#fddfde;border-color:#fbc7c6;}
-td.failure {background-color:#fddfde;border-color:#fbc7c6;}
-td.aborted {background-color: #eee;border-color: #d0d0d0;}
+.build { padding: 30px; }
+.revs th { width: 80%;}
+.building {background-color:#ddf4fb;border-color:#c6edf9;}
+.success {background-color:#d1eed1;border-color:#bfe7bf;}
+.unstable {background-color:#fddfde;border-color:#fbc7c6;}
+.failure {background-color:#fddfde;border-color:#fbc7c6;}
+.aborted {background-color: #eee;border-color: #d0d0d0;}
+
+a.text-building {color:#049cdb;}
+a.text-success {color:#46a546;}
+a.text-unstable {color:#9d261d;}
+a.text-failure {color:#9d261d;}
+a.text-aborted {color: #ffc40d;}
+
 .spinner{height: 15px; float: right; margin-top: 0.2em;}
+.matrix-build { margin: 0; padding:0 ; list-style-type:none;}
 .author{color: #777; font-size: 20px;}
+#error-message { display: none};

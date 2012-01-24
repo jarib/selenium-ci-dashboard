@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Selenium CI</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css" media="screen" title="no title">
+    <link rel="stylesheet" href="/css/master.css" type="text/css" media="screen" title="no title">
+  </head>
+
+  <body>
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="container">
+          <h3><a href="/">Selenium CI</a></h3>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="alert-message error" id="error-message">
+          <p><strong>Ugh, something went wrong!</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <%= yield %>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/jquery.tablesorter.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/app.js" type="text/javascript" charset="utf-8"></script>
+  </body>
+</html>
