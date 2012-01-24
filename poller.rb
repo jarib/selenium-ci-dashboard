@@ -20,7 +20,6 @@ class Poller
   def initialize(host, log)
     @host = host
     @log = log
-
     @pending = 0
   end
 
@@ -47,6 +46,32 @@ class Poller
         end
       end
     end
+
+    # guard for race condition where polling 'lastBuild'
+    # will miss the end state of a build, since a new one starts right away
+    resp = mongo.find(:state => "building").defer_as_a
+    resp.callback do |docs|
+      docs.each do |doc|
+        check_running doc['url']
+      end
+    end
+
+    resp.errback do |klass, msg|
+      @log.error "#{klass} - #{msg}"
+    end
+  end
+
+  def check_running(url)
+    @log.info "checking running build #{url}"
+    api = URI.join(url, "api/json").to_s
+    fetch api do |data, error|
+      if error
+        @log.error error
+      else
+        build = Build.new(data)
+        save_build build unless build.building?
+      end
+    end
   end
 
   def fetch_all(&blk)
@@ -62,11 +87,13 @@ class Poller
   end
 
   def process_job(job)
-    last_build = job.fetch('lastBuild') or return
-    url = last_build.fetch('url')
+    data = job.fetch('lastBuild') or return
+    save_build Build.new(data)
+  end
 
-    @log.info "saving build #{url.inspect}"
-    mongo.update({'url' => url}, Build.new(last_build).as_json, :upsert => true)
+  def save_build(build)
+    @log.info "saving build #{build.url.inspect}"
+    mongo.update({'url' => build.url}, build.as_json, :upsert => true)
   end
 
   def increment
