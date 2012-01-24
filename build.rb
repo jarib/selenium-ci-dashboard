@@ -9,7 +9,8 @@ class Build
       :display_name => display_name,
       :user         => user,
       :revision     => revision,
-      :url          => url
+      :url          => url,
+      :params       => params
     }
   end
 
@@ -39,12 +40,7 @@ class Build
   end
 
   def actions_rev
-    actions = @data.fetch('actions') or return
-    action  = actions.first or return
-    params  = action['parameters'] or return
-    rev     = action['parameters'].find { |e| e['name'] == "svnrevision" } or return
-
-    rev['value']
+    params['svnrevision']
   end
 
   def user
@@ -56,6 +52,22 @@ class Build
     rev = revs && revs.first
 
     rev['revision'] if rev
+  end
+
+  def params
+    @params ||= (
+      actions = @data['actions']
+      params = actions && actions.first && actions.first['parameters']
+
+      result = {}
+      if params
+        params.each do |obj|
+          result[obj['name']] = obj['value']
+        end
+      end
+
+      result
+    )
   end
 
   def changeset_items_rev
