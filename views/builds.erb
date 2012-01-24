@@ -13,7 +13,7 @@
     <div class="container">
       <% @builds.each do |rev, subs| %>
       <h3>
-        <a class="build href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a>
+        <a class="build" href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a>
         <span class="author"><%= @users[rev] %></span>
       </h3>
 
