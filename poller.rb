@@ -7,15 +7,15 @@ require "./build"
 
 class Poller
   CONNECT_OPTIONS = {
-    :connect_timeout    => 5,
-    :inactivity_timeout => 5,
+    :connect_timeout    => 3,
+    :inactivity_timeout => 10,
   }
 
   REQUEST_OPTIONS = {
     :redirects => 10
   }
 
-  INTERVAL = 60*2
+  INTERVAL = 60
 
   def initialize(host, log)
     @host = host
@@ -38,61 +38,38 @@ class Poller
   private
 
   def poll
-    fetch_all_jobs do |jobs, error|
+    fetch_all do |data, error|
       if error
         @log.error error
       else
-        jobs.each_with_index do |job, idx|
-          delay = (INTERVAL / jobs.size.to_f)*idx
-          @log.info "scheduling fetch of #{idx} in #{delay} seconds"
-          EM.add_timer(delay) {
-            fetch_builds_for(job) { |build| process_build(build) }
-          }
+        data.each do |job|
+          EM.schedule { process_job job }
         end
       end
     end
   end
 
-  def process_build(build)
-    url = build.fetch('url')
+  def fetch_all(&blk)
+    url = URI.join(@host, 'api/json?tree=jobs[displayName,url,lastBuild[actions[parameters[name,value]],url,result,building,changeSet[items[user,revision]]]]').to_s 
+
+    fetch url do |data, error|
+      if error
+        yield nil, error
+      else
+        yield data.fetch('jobs'), nil
+      end
+    end
+  end
+
+  def process_job(job)
+    name       = job.delete('displayName')
+    last_build = job.delete('lastBuild')
+
+    last_build['displayName'] = name
+    url = last_build.fetch('url')
+
     @log.info "saving build #{url.inspect}"
-    mongo.update({'url' => url}, Build.new(build).as_json, :upsert => true)
-  end
-
-  def fetch_all_jobs(&blk)
-    @log.info "fetching all jobs"
-    fetch(api_url_for(@host), 'jobs', &blk)
-  end
-
-  def fetch_builds_for(job, &blk)
-    url = api_url_for job.fetch('url')
-    @log.info "fetching builds for #{url}"
-    fetch(url, 'builds') do |builds, error|
-      if error
-        @log.error error
-      else
-        if builds.first
-          fetch_build_data(builds.first, &blk)
-        end
-      end
-    end
-  end
-
-  def fetch_build_data(build, &blk)
-    url = api_url_for(build.fetch('url'))
-
-    @log.info "fetching build data for #{url}"
-    fetch(url) do |data, e|
-      if e
-        @log.error e
-      else
-        yield data
-      end
-    end
-  end
-
-  def api_url_for(url)
-    URI.join(url, 'api/json').to_s
+    mongo.update({'url' => url}, Build.new(last_build).as_json, :upsert => true)
   end
 
   def increment
@@ -105,7 +82,7 @@ class Poller
     @log.info "pending: #{@pending}"
   end
 
-  def fetch(url, key = nil, &blk)
+  def fetch(url, &blk)
     increment
     http = EventMachine::HttpRequest.new(url, CONNECT_OPTIONS).get REQUEST_OPTIONS
 
@@ -123,23 +100,21 @@ class Poller
 
         begin
           result = JSON.parse(http.response)
-          result = result.fetch(key) if key
         rescue IndexError, JSON::ParserError => ex
           yield nil, "#{ex.message} for #{url}"
           next
         end
 
-        yield(result, nil)
+        yield result, nil
       else
         @log.error "#{url}: #{http.response_header.status}"
-        yield(nil, "#{http.last_effective_url} returned #{http.response_header.status}")
+        yield nil, "#{http.last_effective_url} returned #{http.response_header.status}"
       end
     }
   end
 
   def mongo
     @mongo ||= EM::Mongo::Connection.new('localhost').db("selenium").collection("builds")
-
   end
 end
 

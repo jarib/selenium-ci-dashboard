@@ -31,7 +31,7 @@ class Build
   end
 
   def display_name
-    @data.fetch('fullDisplayName')
+    @data.fetch('displayName')
   end
 
   def revision
