@@ -1,13 +1,27 @@
-<div id="revision-sidebar">
-  <div>
-    {{#revisions}}
-    <p>
-      <span>r{{revision}}</span>
-      <span>{{user}}</span>
-      {{#building}}
-        <img src="img/ajax-loader.gif" alt="building" class="spinner">
-      {{/building}}
-    </p>
-    {{/revisions}}
-  </div>
+<h3>Builds</h3>
+
+<!-- {{#revisions}}
+<div class="revision">
+  <div><a href="/#/revision/{{revision}}">r{{revision}}</a></div>
+  <div>{{user}}</div>
+  {{#building}}
+    <img src="img/ajax-loader.gif" alt="building" class="spinner">
+  {{/building}}
 </div>
+{{/revisions}} -->
+
+<table class="zebra-striped">
+  <tbody>
+    {{#revisions}}
+    <tr>
+      <td><a href="/#/revision/{{revision}}">r{{revision}}</a></td>
+      <td>{{user}}</td>
+      <td>
+        {{#building}}
+          <img src="img/ajax-loader.gif" alt="building" class="spinner">
+        {{/building}}
+      </td>
+    </tr>
+    {{/revisions}}
+  </tbody>
+</table>

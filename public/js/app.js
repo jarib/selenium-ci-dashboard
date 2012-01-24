@@ -5,9 +5,13 @@
 var Sidebar = function() {};
 
 Sidebar.prototype.refresh = function(context) {
-  context.load('revs.json').
+  context.load('revs.json', {cache: false}).
           render('revision_sidebar.mustache').
-          replace('.sidebar');
+          replace('.sidebar').then(function() {
+            $(".sidebar tr").click(function() {
+              context.redirect($(this).find("a").attr("href"));
+            })
+          });
 
 };
 
@@ -16,8 +20,11 @@ Sidebar.prototype.refresh = function(context) {
 //
 
 var Builds = function() {};
+Builds.currentView = 'list';
 
 Builds.prototype.load = function(context, params) {
+  $(".content").html('');
+
   context.load("/builds/" + params.revision + ".json")
       .render("builds.mustache")
       .replace('.content')
@@ -25,18 +32,23 @@ Builds.prototype.load = function(context, params) {
         $("#list").tablesorter();
 
         if(params.view == "list") {
+          Builds.currentView = "list";
+
           $("#matrix-tab").removeClass("active")
           $("#list-tab").addClass("active")
 
           $("#matrix").hide();
-          $("#list").slideDown();
+          $("#list").show();
         } else {
+          Builds.currentView = "matrix";
+
           $("#list-tab").removeClass("active")
           $("#matrix-tab").addClass("active")
 
           $("#list").hide();
-          $("#matrix").slideDown();
+          $("#matrix").show();
         }
+
       });
 };
 
@@ -60,6 +72,10 @@ var app = Sammy('#main', function() {
   this.get('#/revision/:revision/:view', function(context) {
     app.pages.sidebar.refresh(this);
     app.pages.builds.load(this, this.params)
+  });
+
+  this.get('#/revision/:revision', function(context) {
+    this.redirect("#/revision/" + this.params.revision + "/" + Builds.currentView)
   });
 });
 
