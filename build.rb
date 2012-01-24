@@ -31,11 +31,11 @@ class Build
   end
 
   def display_name
-    @data.fetch('displayName')
+    @data.fetch('fullDisplayName')
   end
 
   def revision
-    (actions_rev || changeset_rev || 'unknown').to_s
+    (actions_rev || changeset_rev || changeset_items_rev || 'unknown').to_s
   end
 
   def actions_rev
@@ -48,18 +48,25 @@ class Build
   end
 
   def user
-    changeset && changeset['user']
+    changeset_item && changeset_item['user']
   end
 
   def changeset_rev
-    changeset && changeset['revision']
+    revs = @data['changeSet'] && @data['changeSet']['revisions']
+    rev = revs && revs.first
+
+    rev['revision'] if rev
   end
 
-  def changeset
-    if defined? @cs
-      @cs
+  def changeset_items_rev
+    changeset_item && changeset_item['revision']
+  end
+
+  def changeset_item
+    if defined? @changeset_item
+      @changeset_item
     else
-      @cs = (
+      @changeset_item = (
         cs = @data['changeSet'] && @data['changeSet']['items']
         cs = cs && cs.first
       )

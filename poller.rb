@@ -50,7 +50,7 @@ class Poller
   end
 
   def fetch_all(&blk)
-    url = URI.join(@host, 'api/json?tree=jobs[displayName,url,lastBuild[actions[parameters[name,value]],url,result,building,changeSet[items[user,revision]]]]').to_s 
+    url = URI.join(@host, 'api/json?tree=jobs[lastBuild[fullDisplayName,actions[parameters[name,value]],url,result,building,changeSet[items[user,revision],revisions[revision]]]]').to_s
 
     fetch url do |data, error|
       if error
@@ -62,10 +62,7 @@ class Poller
   end
 
   def process_job(job)
-    name       = job.delete('displayName')
-    last_build = job.delete('lastBuild')
-
-    last_build['displayName'] = name
+    last_build = job.fetch('lastBuild') or return
     url = last_build.fetch('url')
 
     @log.info "saving build #{url.inspect}"
