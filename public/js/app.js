@@ -27,7 +27,7 @@ $(document).ready(function() {
           dataType: "html",
 
           success: function(data) {
-            revElement.after(data);
+            revElement.before(data);
           },
 
           error: function() {

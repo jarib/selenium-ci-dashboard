@@ -58,7 +58,7 @@ class App < Sinatra::Base
       [view.row_name, view.column_name]
     end
 
-    @alert = what_you_broke(views)
+    @broken = what_you_broke(views)
 
     # @builds.each { |k,v| p k => v.map { |e| e.name }  }
 
@@ -85,18 +85,23 @@ class App < Sinatra::Base
     def what_you_broke(builds)
       counts = Hash.new(0)
 
-      builds.each do |view|
-        next unless view.failed?
+      failed_builds = builds.select { |e| e.failed? }
+
+      failed_builds.each do |view|
         view.params.each do |key, value|
           next if key == "svnrevision"
           counts[[key.downcase, value.downcase]] += 1
         end
       end
 
-      common = counts.select { |key, count| count == builds.size }.keys
+      common = counts.select { |key, count| count == failed_builds.size }.keys
       if common.any?
-        broken = Hash[common]
-        "Looks like #{broken.inspect} is broken."
+        str = []
+        common.each do |key, value|
+          str << "#{key}=#{value}"
+        end
+
+        str.join(', ')
       end
     end
   end
