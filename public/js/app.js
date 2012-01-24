@@ -5,19 +5,29 @@ $(document).ready(function() {
     var el = $(this);
 
     var rev = el.parent().parent().attr("data-rev");
-    var revsTable = $("#revs-" + rev).hide();
+    var matrixElement = $("#matrix-" + rev);
+    var revElement = $("#revs-" + rev);
+
     // switch tab
     $(".tabs li").removeClass("active");
     el.parent().addClass("active");
 
     if(el.text() == "matrix") {
+      revElement.hide();
+
+      if(matrixElement.size() != 0) {
+        console.log("showing existing element");
+        matrixElement.show();
+        return;
+      }
+
       $.ajax({
           url: "/matrix/" + rev,
           type: "GET",
           dataType: "html",
 
           success: function(data) {
-            revsTable.after(data);
+            revElement.after(data);
           },
 
           error: function() {
@@ -28,8 +38,8 @@ $(document).ready(function() {
           },
       });
     } else {
-      $("#matrix-" + rev).hide();
-      $("#revs-" + rev).show();
+      matrixElement.hide();
+      revElement.show();
     }
   });
 });
