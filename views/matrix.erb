@@ -16,7 +16,7 @@
           <td>
             <ul class="matrix-build">
             <% builds.each do |build| %>
-              <li><a class="text-<%= build.state %>" href="<%= build.url %>"><%= build.state %></a></li>
+              <li><%= build.type %> <a class="text-<%= build.state %>" href="<%= build.url %>"><%= build.state %></a></li>
             <% end %>
             </ul>
           </td>

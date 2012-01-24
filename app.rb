@@ -92,6 +92,10 @@ class App < Sinatra::Base
       @data['state']
     end
 
+    def type
+      stringify(params['type'])
+    end
+
     def name
       @data['display_name']
     end
