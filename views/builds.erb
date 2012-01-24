@@ -1,38 +1,46 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="/css/master.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <title>Selenium CI</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css" media="screen" title="no title">
+    <link rel="stylesheet" href="/css/master.css" type="text/css" media="screen" title="no title">
   </head>
 
   <body>
     <div class="topbar">
       <div class="topbar-inner">
-        <div class="container"><h3><a href="/">Selenium CI</a></h3></div>
+        <div class="container">
+          <h3><a href="/">Selenium CI</a></h3>
+        </div>
       </div>
     </div>
+
     <div class="container">
       <% @builds.each do |rev, subs| %>
-      <h3>
+      <h2>
         <a class="build" href="http://code.google.com/p/selenium/source/detail?r=<%= rev %>">r<%= rev %></a>
         <span class="author"><%= @users[rev] %></span>
-      </h3>
+      </h2>
 
       <table>
         <thead>
-          <tr class="header">
+          <tr>
             <th>Name</th>
             <th>State</th>
           </tr>
         </thead>
         <tbody>
           <% subs.sort_by { |e| e['display_name'] }.each do |build| %>
-          <tr class="name">
+          <tr>
             <td>
               <a href="<%= build['url'] %>"><%= build['display_name'] %></a>
             </td>
 
             <% if build['state'].to_s == 'building' %>
-              <td class="state building"><img src="img/ajax-loader.gif" class="spinner">building</td>
+              <td class="state building">
+                building
+                <img src="img/ajax-loader.gif" alt="building" class="spinner">
+              </td>
             <% else %>
               <td class="state <%= build['state'] %>"><%= build['state'] %></td>
             <% end %>

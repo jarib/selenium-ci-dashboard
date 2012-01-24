@@ -1,9 +1,8 @@
 body { padding-top: 50px; }
-
 th { width: 80%;}
 td.building {background-color:#ddf4fb;border-color:#c6edf9;}
 td.success {background-color:#d1eed1;border-color:#bfe7bf;}
 td.unstable {background-color:#fddfde;border-color:#fbc7c6;}
 td.aborted {background-color: #eee;border-color: #d0d0d0;}
-.spinner{height: 10px; float: right; margin-top: 0.3em;}
+.spinner{height: 15px; float: right; margin-top: 0.2em;}
 .author{color: #777; font-size: 20px;}
