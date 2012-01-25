@@ -1,4 +1,4 @@
-<div class="container build">
+<div class="container">
   <h2 class="pull-right">
     <a class="build" href="http://code.google.com/p/selenium/source/detail?r={{revision}}">r{{revision}}</a>
   </h2>
@@ -29,11 +29,9 @@
           <th>{{name}}</th>
           {{#cells}}
             <td>
-              <ul class="matrix-build">
-                {{#build}}
-                  <li>{{type}} <a class="text-{{state}}" href="{{url}}">{{state}}</a></li>
-                {{/build}}
-              </ul>
+              {{#build}}
+                <div><a class="text-{{state}}" href="{{url}}">{{type}}</a></div>
+              {{/build}}
             </td>
           {{/cells}}
         </tr>

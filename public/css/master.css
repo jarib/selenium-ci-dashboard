@@ -59,9 +59,8 @@ a.text-aborted {
   font-size: 20px;
 }
 #error-message {
-  display: none
+  display: none;
 }
-;
 .sidebar > tr:hover {
   border: 1px solid gray;
 }
