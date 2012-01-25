@@ -58,6 +58,8 @@ a.text-aborted {
 #error-message {
   display: none;
 }
-.sidebar > tr:hover {
-  border: 1px solid gray;
+
+#se-logo {
+  height: 30px;
+  padding-top: 5px;
 }
