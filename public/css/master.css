@@ -2,8 +2,9 @@ body {
   padding-top: 50px;
 }
 .build {
-  padding: 30px;
+  margin-left: 20%;
 }
+
 .revs th {
   width: 80%;
 }
@@ -49,19 +50,14 @@ a.text-aborted {
   float: right;
   margin-top: 0.2em;
 }
-.matrix-build {
-  margin: 0;
-  padding: 0 ;
-  list-style-type: none;
-}
 .author {
   color: #777;
   font-size: 20px;
 }
+
 #error-message {
   display: none;
 }
 .sidebar > tr:hover {
   border: 1px solid gray;
 }
-

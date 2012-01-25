@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container build">
   <h2 class="pull-right">
     <a class="build" href="http://code.google.com/p/selenium/source/detail?r={{revision}}">r{{revision}}</a>
   </h2>
@@ -15,7 +15,7 @@
   {{/broken}}
 
 
-  <table id="matrix" style="display:none;">
+  <table id="matrix" class="bordered-table" style="display:none;">
     <thead>
       <tr>
         <th></th>
@@ -31,8 +31,12 @@
           {{#cells}}
             <td>
               {{#build}}
+                {{#building}}
+                  <img src="img/ajax-loader.gif" alt="building" class="spinner">
+                {{/building}}
                 <div><a class="text-{{state}}" href="{{url}}">{{type}}</a></div>
               {{/build}}
+
             </td>
           {{/cells}}
         </tr>

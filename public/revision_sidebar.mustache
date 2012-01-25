@@ -1,26 +1,23 @@
-<h3>Builds</h3>
-
 <table class="zebra-striped">
   <thead>
     <tr>
-      <th>rev</th>
       <th>author</th>
-      <th>builds</th>
+      <th>rev</th>
       <th></th>
+      <th>jobs</th>
     </tr>
   </thead>
   <tbody>
     {{#revisions}}
     <tr>
-      <td><a href="/#/revision/{{revision}}">r{{revision}}</a></td>
       <td><strong>{{user}}</strong></td>
-      <td>{{count}}</td>
+      <td><a href="/#/revision/{{revision}}">r{{revision}}</a></td>
       <td>
         {{#building}}
           <img src="img/ajax-loader.gif" alt="building" class="spinner">
         {{/building}}
       </td>
-
+      <td>{{count}}</td>
     </tr>
     {{/revisions}}
   </tbody>
