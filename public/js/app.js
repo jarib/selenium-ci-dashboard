@@ -2,17 +2,28 @@
 // Sidebar
 //
 
-var Sidebar = function() {};
+var Sidebar = function() {
+};
 
-Sidebar.prototype.refresh = function(context) {
+Sidebar.prototype.refresh = function(context, revision) {
+  var self = this;
   context.load('revs.json', {cache: false}).
           render('revision_sidebar.mustache').
           replace('.sidebar').then(function() {
-            $(".sidebar tr").click(function() {
+            var rows = $(".sidebar tr");
+            rows.click(function() {
               context.redirect($(this).find("a").attr("href"));
             })
-          });
 
+            if(revision) {
+              Sammy.log("selected revision:" + revision);
+              self.rowForRevision(revision).addClass("active");
+            }
+          });
+};
+
+Sidebar.prototype.rowForRevision = function(revision) {
+  return $(".sidebar tr[data-revision=" + revision + "]");
 };
 
 //
@@ -70,7 +81,7 @@ var app = Sammy('#main', function() {
   });
 
   this.get('#/revision/:revision/:view', function(context) {
-    app.pages.sidebar.refresh(this);
+    app.pages.sidebar.refresh(this, this.params.revision);
     app.pages.builds.load(this, this.params)
   });
 

@@ -63,3 +63,5 @@ a.text-aborted {
   height: 30px;
   padding-top: 5px;
 }
+
+.zebra-striped tbody tr.active,.zebra-striped tbody tr.active{border-left: 1px solid black;}
