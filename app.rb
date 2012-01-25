@@ -10,7 +10,7 @@ class App < Sinatra::Base
   set :styles, [
     "/css/bootstrap.min.css",
     "/css/master.css"
-    ].map { |e| "#{e}?#{rand 1000}" }
+  ]
 
   configure do
     db.ensure_index 'revision'
