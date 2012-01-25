@@ -3,16 +3,17 @@
     <a class="build" href="http://code.google.com/p/selenium/source/detail?r={{revision}}">r{{revision}}</a>
   </h2>
 
+  <ul class="tabs">
+    <li id="matrix-tab"><a href="#/revision/{{revision}}/matrix">matrix</a></li>
+    <li id="list-tab"><a href="#/revision/{{revision}}/list">list</a></li>
+  </ul>
+
   {{#broken}}
   <div class="alert-message error">
     <p>Looks like <strong>{{broken}}</strong> is broken.</p>
   </div>
   {{/broken}}
 
-  <ul class="tabs">
-    <li id="matrix-tab"><a href="#/revision/{{revision}}/matrix">matrix</a></li>
-    <li id="list-tab"><a href="#/revision/{{revision}}/list">list</a></li>
-  </ul>
 
   <table id="matrix" style="display:none;">
     <thead>
