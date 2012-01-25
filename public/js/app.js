@@ -2,7 +2,9 @@
 // Sidebar
 //
 
-var Sidebar = function() {};
+var Sidebar = function() {
+  this.setupKeyboard();
+};
 
 Sidebar.prototype.refresh = function(context) {
   context.load('revs.json', {cache: false}).
@@ -12,7 +14,55 @@ Sidebar.prototype.refresh = function(context) {
               context.redirect($(this).find("a").attr("href"));
             })
           });
+};
 
+Sidebar.prototype.setupKeyboard = function() {
+  var self = this;
+  $(window).keydown(function(e) {
+    switch (e.which) {
+      case 74: // j
+        self.moveDown();
+        break;
+      case 75: // k
+        self.moveUp()
+        break;
+    }
+  });
+};
+
+Sidebar.prototype.moveDown = function() {
+  var rows = $(".sidebar tr");
+  var active = rows.filter(".active")
+  var next = active.next();
+
+  if(active.size() == 0 || next.size() == 0) {
+    // select the first item
+    this.makeFirstItemActive();
+  } else {
+    active.removeClass("active");
+    next.addClass("active").scrollintoview({duration: 0});
+    next.find("a").click();
+  }
+};
+
+Sidebar.prototype.moveUp = function() {
+  var rows = $(".sidebar tr");
+  var active = rows.filter(".active")
+  var prev = active.prev();
+
+  if(active.size() == 0 || prev.size() == 0) {
+    // select the first item
+  } else {
+    active.removeClass("active");
+    prev.addClass("active").scrollintoview({duration: 0});
+    prev.find("a").click();
+  }
+};
+
+Sidebar.prototype.makeFirstItemActive = function() {
+  $(".sidebar tr").filter(":eq(1)")
+      .addClass("active")
+      .scrollintoview({duration: 0});
 };
 
 //
