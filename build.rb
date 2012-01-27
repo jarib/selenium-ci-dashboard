@@ -10,7 +10,8 @@ class Build
       :user         => user,
       :revision     => revision,
       :url          => url,
-      :params       => params
+      :params       => params,
+      :message      => message
     }
   end
 
@@ -45,6 +46,10 @@ class Build
 
   def user
     changeset_item && changeset_item['user']
+  end
+
+  def message
+    changeset_item && changeset_item['msg']
   end
 
   def changeset_rev

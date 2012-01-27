@@ -75,7 +75,7 @@ class Poller
   end
 
   def fetch_all(&blk)
-    url = URI.join(@host, 'api/json?tree=jobs[lastBuild[fullDisplayName,actions[parameters[name,value]],url,result,building,changeSet[items[user,revision],revisions[revision]]]]').to_s
+    url = URI.join(@host, 'api/json?tree=jobs[lastBuild[fullDisplayName,actions[parameters[name,value]],url,result,building,changeSet[items[user,revision,msg],revisions[revision]]]]').to_s
 
     fetch url do |data, error|
       if error
