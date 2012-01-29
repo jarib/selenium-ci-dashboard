@@ -46,54 +46,44 @@ class Poller
         end
       end
     end
-
-    # guard for race condition where polling 'lastBuild'
-    # will miss the end state of a build, since a new one starts right away
-    resp = mongo.find(:state => "building").defer_as_a
-    resp.callback do |docs|
-      docs.each do |doc|
-        check_running doc['url']
-      end
-    end
-
-    resp.errback do |klass, msg|
-      @log.error "#{klass} - #{msg}"
-    end
   end
 
-  def check_running(url)
-    @log.info "checking running build #{url}"
-    api = URI.join(url, "api/json").to_s
+  def process_job(job)
+    @log.info "checking queued build #{job}"
+
+    url = job['url']
+    api = URI.join(url, "api/json?tree=fullDisplayName,actions[parameters[name,value]],url,result,building,changeSet[items[user,revision,msg],revisions[revision]]").to_s
     fetch api do |data, error|
       if error
         @log.error error
       else
         build = Build.new(data)
-        save_build build unless build.building?
+        save_build build
+        remove_from_queue url unless build.building?
       end
     end
+  end
+
+  def remove_from_queue(url)
+      @log.info "removing from queue: #{url}"
+      coll('queue').remove('url' => url)
   end
 
   def fetch_all(&blk)
-    url = URI.join(@host, 'api/json?tree=jobs[lastBuild[fullDisplayName,actions[parameters[name,value]],url,result,building,changeSet[items[user,revision,msg],revisions[revision]]]]').to_s
+    cursor = coll('queue').find.defer_as_a
 
-    fetch url do |data, error|
-      if error
-        yield nil, error
-      else
-        yield data.fetch('jobs'), nil
-      end
+    cursor.errback do |klass, msg|
+      yield nil, "#{klass} - #{msg}"
     end
-  end
 
-  def process_job(job)
-    data = job.fetch('lastBuild') or return
-    save_build Build.new(data)
+    cursor.callback do |docs|
+      yield docs, nil
+    end
   end
 
   def save_build(build)
     @log.info "saving build #{build.url.inspect}"
-    mongo.update({'url' => build.url}, build.as_json, :upsert => true)
+    coll('builds').update({'url' => build.url}, build.as_json, :upsert => true)
   end
 
   def increment
@@ -138,7 +128,11 @@ class Poller
   end
 
   def mongo
-    @mongo ||= EM::Mongo::Connection.new('localhost').db("selenium").collection("builds")
+    @mongo ||= EM::Mongo::Connection.new('localhost').db("selenium")
+  end
+
+  def coll(name)
+    mongo.collection(name)
   end
 end
 
