@@ -1,4 +1,5 @@
 
+desc 'Release the app'
 task :release do
   host = ENV['host'] or raise "please specify host"
   sh "git push origin master"

@@ -3,9 +3,10 @@ require 'mongo'
 require './build'
 require 'pp'
 require 'json'
+require 'uri'
 
 class App < Sinatra::Base
-  set :db, Mongo::Connection.new.db("selenium").collection("builds")
+  set :db, Mongo::Connection.new.db("selenium")
   set :views, File.expand_path("../views", __FILE__)
   set :styles, [
     "/css/bootstrap.min.css",
@@ -13,11 +14,24 @@ class App < Sinatra::Base
   ]
 
   configure do
-    db.ensure_index 'revision'
+    settings.db.collection('builds').ensure_index 'revision'
   end
 
   get "/" do
     erb :app
+  end
+
+  post "/build" do
+    url = nil
+    begin
+      url = URI.parse(request.body.read)
+    rescue
+      halt 400, 'invalid url'
+    end
+
+    db('queue').insert(:timestamp => Time.now, :url => url.to_s)
+
+    'ok'
   end
 
   get "/revs.json" do
@@ -28,7 +42,7 @@ class App < Sinatra::Base
   get "/builds/:revision.json" do |revision|
     content_type :json
 
-    builds = db.find(:revision => revision).
+    builds = db("builds").find(:revision => revision).
                 map { |e| BuildView.new e }.
                 sort_by { |b| b.name }
 
@@ -50,20 +64,20 @@ class App < Sinatra::Base
     end
 
     def revs(last = 10)
-      revs = db.distinct('revision')
+      revs = db("builds").distinct('revision')
       revs.delete(nil)
       revs.delete('unknown')
 
       revs.map { |e| e.to_s }.sort.last(last)
     end
 
-    def db
-      settings.db
+    def db(collection)
+      settings.db.collection(collection)
     end
 
     def fetch_revision_list
       revisions = revs(50)
-      builds = revisions.map { |r| db.find(:revision => r).to_a }.flatten
+      builds = revisions.map { |r| db("builds").find(:revision => r).to_a }.flatten
 
       users = {}
       building = {}
