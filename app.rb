@@ -54,7 +54,8 @@ class App < Sinatra::Base
       :row_headers    => matrix.row_headers,
       :column_headers => matrix.column_headers,
       :rows           => matrix.rows,
-      :broken         => what_you_broke(builds)
+      :broken         => what_you_broke(builds),
+      :message        => message_from(builds)
     }.to_json
   end
 
@@ -88,6 +89,7 @@ class App < Sinatra::Base
 
         building[rev] ||= (b['state'].to_sym == :building)
         users[rev] ||= b['user']
+
         build_counts[rev] += 1
       end
 
@@ -117,6 +119,11 @@ class App < Sinatra::Base
 
         str.join(', ')
       end
+    end
+
+    def message_from(builds)
+      b = builds.find { |e| e.message }
+      b && b.message
     end
 
     def matrix_from(builds)
@@ -190,8 +197,9 @@ class App < Sinatra::Base
        :failed   => failed?,
        :building => building?,
        :url      => url,
-       :name    => name,
-       :type    => type
+       :name     => name,
+       :type     => type,
+       :message  => message
       }
     end
 
@@ -209,6 +217,13 @@ class App < Sinatra::Base
 
     def revision
       @data['revision']
+    end
+
+    def message
+      msg = @data['message']
+      if msg
+        msg.size > 120 ? msg[0, 120] << "..." : msg
+      end
     end
 
     def state
