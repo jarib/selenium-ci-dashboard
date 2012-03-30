@@ -54,7 +54,9 @@ class Poller
     url = job['url']
     api = URI.join(url, "api/json?tree=fullDisplayName,actions[parameters[name,value]],url,result,building,changeSet[items[user,revision,msg],revisions[revision]]").to_s
     fetch api do |data, error|
-      if error
+      if error && error =~ /404/
+        remove_from_queue url
+      elsif error
         @log.error error
       else
         build = Build.new(data)
@@ -123,7 +125,7 @@ class Poller
         yield result, nil
       when 404
         @log.warn "404 for #{url}, removing from queue"
-        remove_from_queue url
+        yield nil, "404 for #{url}"
       else
         @log.error "#{url}: #{http.response_header.status}"
         yield nil, "#{http.last_effective_url} returned #{http.response_header.status}"
