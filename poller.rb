@@ -109,7 +109,8 @@ class Poller
     http.callback {
       decrement
 
-      if http.response_header.status == 200
+      case http.response_header.status
+      when 200
         @log.info "#{url}: #{http.response_header.status}"
 
         begin
@@ -120,6 +121,9 @@ class Poller
         end
 
         yield result, nil
+      when 404
+        @log.warn "404 for #{url}, removing from queue"
+        remove_from_queue url
       else
         @log.error "#{url}: #{http.response_header.status}"
         yield nil, "#{http.last_effective_url} returned #{http.response_header.status}"
