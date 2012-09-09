@@ -89,7 +89,7 @@ class App < Sinatra::Base
         rev = b['revision']
         state = b['state'].to_sym
 
-        building[rev] ||= (b['state'].to_sym == :building)
+        building[rev] ||= (state == :building)
         users[rev] ||= b['user']
 
         counts = build_counts[rev]
@@ -131,8 +131,6 @@ class App < Sinatra::Base
     end
 
     def class_for_build_state(k)
-      [:success, :total, :unstable, :failure, :building]
-
       case k
       when :success
         'success'
@@ -234,7 +232,7 @@ class App < Sinatra::Base
     end
 
     def failed?
-      [:unstable, :failed].include? state.to_sym
+      [:unstable, :failed, :aborted].include? state.to_sym
     end
 
     def building?
