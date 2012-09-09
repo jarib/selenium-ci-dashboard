@@ -60,7 +60,7 @@ class App < Sinatra::Base
     }.to_json
   end
 
-  get '/stats.json' do
+  get '/graphs.json' do
     content_type :json
 
     groups = Hash.new { |hash, state| hash[state] = [] }

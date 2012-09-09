@@ -83,31 +83,31 @@ Builds.prototype.hide = function() {
   $("#menu-item-builds").removeClass('active');
 };
 
-var Stats = function() {
-  this.selector = '#stats';
+var Graphs = function() {
+  this.selector = '#graphs';
 
 };
 
-Stats.prototype.load = function(context) {
+Graphs.prototype.load = function(context) {
   this.show();
 
   var self = this;
-  context.load('/stats.json').then(function(data) {
+  context.load('/graphs.json').then(function(data) {
     self.renderGraph("#area-graph",data);
   });
 };
 
-Stats.prototype.hide = function() {
-  $("#menu-item-stats").removeClass('active');
+Graphs.prototype.hide = function() {
+  $("#menu-item-graphs").removeClass('active');
   $(this.selector).hide();
 };
 
-Stats.prototype.show = function() {
-  $("#menu-item-stats").addClass('active');
+Graphs.prototype.show = function() {
+  $("#menu-item-graphs").addClass('active');
   $(this.selector).show();
 };
 
-Stats.prototype.renderGraph = function(selector, data) {
+Graphs.prototype.renderGraph = function(selector, data) {
   this.chart = new Highcharts.Chart({
     chart: {
         renderTo: document.querySelector(selector),
@@ -164,7 +164,7 @@ var app = Sammy('#main', function() {
   this.pages = {};
   this.pages.sidebar = new Sidebar();
   this.pages.builds = new Builds();
-  this.pages.stats = new Stats();
+  this.pages.graphs = new Graphs();
 
   $(document).ajaxStart(function() {
     $("#loading").show();
@@ -175,7 +175,7 @@ var app = Sammy('#main', function() {
   });
 
   this.get('#/', function(context) {
-    app.pages.stats.hide();
+    app.pages.graphs.hide();
     app.pages.sidebar.refresh(this);
   });
 
@@ -188,10 +188,10 @@ var app = Sammy('#main', function() {
     this.redirect("#/revision/" + this.params.revision + "/" + Builds.currentView)
   });
 
-  this.get('#/stats', function(context) {
+  this.get('#/graphs', function(context) {
     app.pages.sidebar.hide();
     app.pages.builds.hide();
-    app.pages.stats.load(this);
+    app.pages.graphs.load(this);
   })
 });
 
