@@ -1,24 +1,30 @@
-<table class="zebra-striped">
-  <thead>
+<table class="table table-condensed">
+  <thead class="hidden-phone">
     <tr>
-      <th>author</th>
-      <th>rev</th>
       <th></th>
-      <th>jobs</th>
+      <th>Author</th>
+      <th>Revision</th>
+      <th>Jobs</th>
     </tr>
   </thead>
   <tbody>
     {{#revisions}}
-    <tr data-revision="{{revision}}">
-      <td><strong>{{user}}</strong></td>
-      <td><a href="/#/revision/{{revision}}">r{{revision}}</a></td>
+    <tr data-revision="{{revision}}" class="{{class}}">
       <td>
         {{#building}}
           <img src="img/ajax-loader.gif" alt="building" class="spinner">
         {{/building}}
       </td>
-      <td>{{count}}</td>
+      <td>{{user}}</td>
+      <td><a href="/#/revision/{{revision}}">r{{revision}}</a></td>
+      <td>
+        {{#counts}}
+        <span class="badge badge-{{class}}">{{value}}</span>
+        {{/counts}}
+      </td>
     </tr>
     {{/revisions}}
+
+
   </tbody>
 </table>

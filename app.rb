@@ -10,6 +10,7 @@ class App < Sinatra::Base
   set :views, File.expand_path("../views", __FILE__)
   set :styles, [
     "/css/bootstrap.min.css",
+    "/css/bootstrap-responsive.min.css",
     "/css/master.css"
   ]
 
@@ -82,19 +83,27 @@ class App < Sinatra::Base
 
       users = {}
       building = {}
-      build_counts = Hash.new(0)
+      build_counts = Hash.new { |hash, rev| hash[rev] = Hash.new(0) }
 
       builds.each do |b|
         rev = b['revision']
+        state = b['state'].to_sym
 
         building[rev] ||= (b['state'].to_sym == :building)
         users[rev] ||= b['user']
 
-        build_counts[rev] += 1
+        counts = build_counts[rev]
+        counts[state] += 1
       end
 
-      revisions.sort.reverse.map do |r|
-        {:revision => r, :user => users[r], :building => building[r], :count => build_counts[r] }
+      revisions.sort.reverse.map.with_index do |r, idx|
+        {
+          :revision => r,
+          :user     => users[r],
+          :building => building[r],
+          :counts   => build_counts[r].map { |k,v| {:key => k, :value => v, :class => class_for_build_state(k) }  },
+          :class    => idx <= 6 ? '' : 'hidden-phone'
+        }
       end
     end
 
@@ -118,6 +127,23 @@ class App < Sinatra::Base
         end
 
         str.join(', ')
+      end
+    end
+
+    def class_for_build_state(k)
+      [:success, :total, :unstable, :failure, :building]
+
+      case k
+      when :success
+        'success'
+      when :unstable
+        'warning'
+      when :failure
+        'important'
+      when :building
+        'info'
+      else
+        'inverse'
       end
     end
 

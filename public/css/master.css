@@ -1,54 +1,58 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700);
+
+
 body {
-  padding-top: 50px;
-}
-.build {
-  margin-left: 20%;
+  font-family: 'Ubuntu', sans-serif;
 }
 
-.revs th {
-  width: 80%;
-}
+
 .building {
-  background-color: #ddf4fb;
-  border-color: #c6edf9;
+  color: #3A87AD;
+  background-color: #D9EDF7;
+  border-color: #BCE8F1
 }
+
 .success {
-  background-color: #d1eed1;
-  border-color: #bfe7bf;
+  color: #468847;
+  background-color: #DFF0D8;
+  border-color: #D6E9C6;
 }
+
 .unstable {
-  background-color: #fddfde;
-  border-color: #fbc7c6;
+  color: #C09853;
+  background-color: #FCF8E3;
+  border-color: #FBEED5;
 }
+
 .failure {
-  background-color: #fddfde;
-  border-color: #fbc7c6;
-}
-.aborted {
-  background-color: #eee;
-  border-color: #d0d0d0;
+  color: #B94A48;
+  background-color: #F2DEDE;
+  border-color: #EED3D7;
 }
 
 a.text-building {
-  color: #049cdb;
+  color: #3A87AD;
 }
+
 a.text-success {
-  color: #46a546;
+  color: #468847;
 }
+
 a.text-unstable {
-  color: #9d261d;
+  color: #F89406;
 }
+
 a.text-failure {
   color: #9d261d;
 }
+
 a.text-aborted {
   color: #ffc40d;
 }
 
 .spinner {
-  height: 15px;
   float: right;
-  margin-top: 0.2em;
+  height: 15px;
 }
 .author {
   color: #777;
@@ -64,4 +68,10 @@ a.text-aborted {
   padding-top: 5px;
 }
 
-.zebra-striped tbody tr.active,.zebra-striped tbody tr.active{border-left: 1px solid black;}
+.commit-message {
+  font-size: 1.5em;
+
+}
+
+#sidebar tr.active { background-color: #eee}
+#sidebar tr:hover { background-color: #eee}

@@ -1,19 +1,21 @@
-<div class="container build">
-  <pre>{{message}} <a class="pull-right" href="http://code.google.com/p/selenium/source/detail?r={{revision}}">r{{revision}}</a></pre>
+<div class="container-fluid">
+  <div class="commit-message well"><a href="http://code.google.com/p/selenium/source/detail?r={{revision}}">r{{revision}}</a> {{message}}</div>
 
-  <ul class="tabs">
-    <li id="matrix-tab"><a href="#/revision/{{revision}}/matrix">matrix</a></li>
-    <li id="list-tab"><a href="#/revision/{{revision}}/list">list</a></li>
-  </ul>
+  <div class="row-fluid">
+      <ul class="nav nav-tabs">
+        <li id="matrix-tab"><a href="#/revision/{{revision}}/matrix">matrix</a></li>
+        <li id="list-tab"><a href="#/revision/{{revision}}/list">list</a></li>
+      </ul>
+  </div>
 
   {{#broken}}
-  <div class="alert-message error">
+  <div class="alert alert-error">
     <p>Looks like <strong>{{broken}}</strong> is broken.</p>
   </div>
   {{/broken}}
 
 
-  <table id="matrix" class="bordered-table" style="display:none;">
+  <table id="matrix" class="table table-bordered table-condensed" style="display:none;">
     <thead>
       <tr>
         <th></th>
@@ -42,7 +44,7 @@
     </tbody>
   </table>
 
-  <table id="list" style="display:none;">
+  <table id="list" class="table" style="display:none;">
     <thead>
       <tr>
         <th>Name</th>

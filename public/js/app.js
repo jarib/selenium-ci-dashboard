@@ -9,8 +9,8 @@ Sidebar.prototype.refresh = function(context, revision) {
   var self = this;
   context.load('revs.json', {cache: false}).
           render('revision_sidebar.mustache').
-          replace('.sidebar').then(function() {
-            var rows = $(".sidebar tr");
+          replace('#sidebar').then(function() {
+            var rows = $("#sidebar tr");
             rows.click(function() {
               context.redirect($(this).find("a").attr("href"));
             })
@@ -23,7 +23,7 @@ Sidebar.prototype.refresh = function(context, revision) {
 };
 
 Sidebar.prototype.rowForRevision = function(revision) {
-  return $(".sidebar tr[data-revision=" + revision + "]");
+  return $("#sidebar tr[data-revision=" + revision + "]");
 };
 
 //
@@ -34,11 +34,11 @@ var Builds = function() {};
 Builds.currentView = 'list';
 
 Builds.prototype.load = function(context, params) {
-  $(".content").html('');
+  $("#content").html('');
 
   context.load("/builds/" + params.revision + ".json")
       .render("builds.mustache")
-      .replace('.content')
+      .replace('#content')
       .then(function() {
         $("#list").tablesorter();
 
