@@ -3,13 +3,15 @@
 //
 
 var Sidebar = function() {
+  this.selector = '#sidebar';
 };
 
 Sidebar.prototype.refresh = function(context, revision) {
+  this.show();
   var self = this;
   context.load('revs.json', {cache: false}).
           render('revision_sidebar.mustache').
-          replace('#sidebar').then(function() {
+          replace(this.selector).then(function() {
             var rows = $("#sidebar tr");
             rows.click(function() {
               context.redirect($(this).find("a").attr("href"));
@@ -23,22 +25,35 @@ Sidebar.prototype.refresh = function(context, revision) {
 };
 
 Sidebar.prototype.rowForRevision = function(revision) {
-  return $("#sidebar tr[data-revision=" + revision + "]");
+  return $(this.selector + " tr[data-revision=" + revision + "]");
+};
+
+Sidebar.prototype.hide = function() {
+  $("#menu-item-builds").removeClass('active');
+  $(this.selector).hide();
+};
+
+Sidebar.prototype.show = function() {
+  $("#menu-item-builds").addClass('active');
+  $(this.selector).show();
 };
 
 //
 // Builds
 //
 
-var Builds = function() {};
+var Builds = function() {
+  this.selector = '#content';
+
+};
 Builds.currentView = 'list';
 
 Builds.prototype.load = function(context, params) {
-  $("#content").html('');
+  $(this.selector).show();
 
   context.load("/builds/" + params.revision + ".json")
       .render("builds.mustache")
-      .replace('#content')
+      .replace(this.selector)
       .then(function() {
         $("#list").tablesorter();
 
@@ -63,20 +78,104 @@ Builds.prototype.load = function(context, params) {
       });
 };
 
+Builds.prototype.hide = function() {
+  $(this.selector).hide();
+  $("#menu-item-builds").removeClass('active');
+};
+
+var Stats = function() {
+  this.selector = '#stats';
+
+};
+
+Stats.prototype.load = function(context) {
+  this.show();
+
+  var self = this;
+  context.load('/stats.json').then(function(data) {
+    self.renderGraph("#area-graph",data);
+  });
+};
+
+Stats.prototype.hide = function() {
+  $("#menu-item-stats").removeClass('active');
+  $(this.selector).hide();
+};
+
+Stats.prototype.show = function() {
+  $("#menu-item-stats").addClass('active');
+  $(this.selector).show();
+};
+
+Stats.prototype.renderGraph = function(selector, data) {
+  this.chart = new Highcharts.Chart({
+    chart: {
+        renderTo: document.querySelector(selector),
+        type: 'areaspline'
+    },
+    title: {
+        text: 'Builds'
+    },
+    credits: { enabled: false },
+    subtitle: {
+        text: ''
+    },
+    xAxis: {
+        categories: data.categories,
+        tickmarkPlacement: 'off',
+        title: {
+            enabled: false
+        },
+        labels: {
+          formatter: function() { return '<a href="#/revision/' + this.value + '">r' + this.value + '</a>'; }
+        }
+
+    },
+    yAxis: {
+        title: {
+            text: 'Count'
+        }
+    },
+    tooltip: {
+        formatter: function() {
+          // console.log(this);
+            return 'r'+
+                this.x +': '+ Highcharts.numberFormat(this.y, 0, ',') +' builds';
+        }
+    },
+    plotOptions: {
+        area: {
+            stacking: 'normal',
+            lineColor: '#666666',
+            lineWidth: 1,
+            marker: {
+                lineWidth: 1,
+                lineColor: '#666666'
+            }
+        }
+    },
+    series: data.series
+  });
+};
+
 var app = Sammy('#main', function() {
   this.use('Mustache');
 
   this.pages = {};
   this.pages.sidebar = new Sidebar();
   this.pages.builds = new Builds();
+  this.pages.stats = new Stats();
 
   $(document).ajaxStart(function() {
+    $("#loading").show();
   });
 
   $(document).ajaxStop(function() {
+    $("#loading").hide();
   });
 
   this.get('#/', function(context) {
+    app.pages.stats.hide();
     app.pages.sidebar.refresh(this);
   });
 
@@ -88,6 +187,12 @@ var app = Sammy('#main', function() {
   this.get('#/revision/:revision', function(context) {
     this.redirect("#/revision/" + this.params.revision + "/" + Builds.currentView)
   });
+
+  this.get('#/stats', function(context) {
+    app.pages.sidebar.hide();
+    app.pages.builds.hide();
+    app.pages.stats.load(this);
+  })
 });
 
 $(document).ready(function() {

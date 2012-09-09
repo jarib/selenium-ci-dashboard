@@ -60,7 +60,56 @@ class App < Sinatra::Base
     }.to_json
   end
 
+  get '/stats.json' do
+    content_type :json
+
+    groups = Hash.new { |hash, state| hash[state] = [] }
+    revisions = []
+
+    revs = fetch_revision_list
+    all_states = revs.map { |rev| rev[:counts].map { |e| e[:key] } }.flatten.uniq
+    all_states.delete :building
+
+    revs.reverse.each do |rev|
+      revisions << rev[:revision]
+      all_states.each do |state|
+        found = rev[:counts].find { |e| e[:key] == state }
+        groups[state] << (found ? found[:value] : 0)
+      end
+    end
+
+    series = groups.map do |state, values|
+      {
+        :name => state,
+        :data => values,
+        :color => color_for(state)
+      }
+    end
+
+
+    {
+      :categories   => revisions,
+      :all_states   => all_states,
+      :series       => series
+    }.to_json
+  end
+
   helpers do
+    def color_for(state)
+      case state
+      when :success
+        '#468847'
+      when :unstable
+        '#C09853'
+      when :failure
+        '#B94A48'
+      when :aborted
+        'black'
+      else
+        'gray'
+      end
+    end
+
     def latest_rev
       revs(1).shift
     end

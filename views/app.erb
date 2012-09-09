@@ -29,14 +29,24 @@
   <body>
     <div class="navbar">
       <div class="navbar-inner">
-        <p class="hidden-phone"><small class="pull-right">Source code on <a href="http://github.com/jarib/selenium-ci-dashboard">GitHub</a>.</small></p>
+        <p class="navbar-text hidden-phone"><small class="pull-right">Source code on <a href="http://github.com/jarib/selenium-ci-dashboard">GitHub</a>.</small></p>
+        <p class="navbar-text" style="display: none; position: absolute; top: 5px; left: 50%;" id="loading">Loading..</p>
 
         <div class="container-fluid">
           <h2>
             <img src="/img/logo.png" id="se-logo">
             Selenium CI
           </h2>
+          <ul class="nav pull-right">
+            <li class="active" id="menu-item-builds">
+               <a href="#/">Builds</a>
+             </li>
+             <li id="menu-item-stats">
+               <a href="/#/stats">Stats</a>
+             </li>
+           </ul>
         </div>
+
       </div>
 
       <div class="container">
@@ -53,11 +63,16 @@
           <div style="font-size: 30px; text-align: center; padding-top: 10%">☚ select a build</div>
         </div>
       </div>
+
+      <div id="stats" style="display: none;">
+        <div id="area-graph"></div>
+      </div>
     </div>
 
     <script src="/js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/jquery-ui-1.8.17.custom.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/jquery.tablesorter.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/highcharts.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/mustache.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/sammy-latest.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/sammy.mustache.js" type="text/javascript" charset="utf-8"></script>
