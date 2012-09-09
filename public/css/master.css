@@ -30,6 +30,12 @@ body {
   border-color: #EED3D7;
 }
 
+.aborted {
+  color: #eee;
+  background-color: black;
+  border-color: gray;
+}
+
 a.text-building {
   color: #3A87AD;
 }
@@ -47,7 +53,7 @@ a.text-failure {
 }
 
 a.text-aborted {
-  color: #ffc40d;
+  color: gray;
 }
 
 .spinner {
