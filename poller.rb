@@ -143,4 +143,4 @@ class Poller
 end
 
 log = Logger.new(STDOUT)
-Poller.new("http://sci.illicitonion.com:8080", log).start
+Poller.new("http://ci.seleniumhq.org:8080", log).start
