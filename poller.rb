@@ -17,8 +17,7 @@ class Poller
 
   INTERVAL = 60
 
-  def initialize(host, log)
-    @host = host
+  def initialize(log)
     @log = log
     @pending = 0
   end
@@ -143,4 +142,4 @@ class Poller
 end
 
 log = Logger.new(STDOUT)
-Poller.new("http://ci.seleniumhq.org:8080", log).start
+Poller.new(log).start
