@@ -35,7 +35,10 @@ Sidebar.prototype.hide = function() {
 
 Sidebar.prototype.show = function() {
   $("#menu-item-builds").addClass('active');
-  $(this.selector).show();
+
+  var e = $(this.selector);
+  if (!e.is(":visible"))
+    e.show();
 };
 
 //
@@ -49,7 +52,7 @@ var Builds = function() {
 Builds.currentView = 'list';
 
 Builds.prototype.load = function(context, params) {
-  $(this.selector).show();
+  this.show();
 
   context.load("/builds/" + params.revision + ".json")
       .render("builds.mustache")
@@ -83,9 +86,12 @@ Builds.prototype.hide = function() {
   $("#menu-item-builds").removeClass('active');
 };
 
+Builds.prototype.show = function() {
+  $(this.selector).show();
+};
+
 var Graphs = function() {
   this.selector = '#graphs';
-
 };
 
 Graphs.prototype.load = function(context) {
@@ -140,7 +146,7 @@ Graphs.prototype.renderGraph = function(selector, data) {
         formatter: function() {
           // console.log(this);
             return 'r'+
-                this.x +': '+ Highcharts.numberFormat(this.y, 0, ',') +' builds';
+                this.x +': '+ Highcharts.numberFormat(this.y, 0, ',') + ' build' + (this.y != 1 ? 's' : '');
         }
     },
     plotOptions: {
@@ -176,6 +182,7 @@ var app = Sammy('#main', function() {
 
   this.get('#/', function(context) {
     app.pages.graphs.hide();
+    app.pages.builds.show();
     app.pages.sidebar.refresh(this);
   });
 
