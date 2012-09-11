@@ -68,7 +68,6 @@ class App < Sinatra::Base
 
     revs = fetch_revision_list
     all_states = revs.map { |rev| rev[:counts].map { |e| e[:key] } }.flatten.uniq
-    all_states.delete :building
 
     revs.reverse.each do |rev|
       revisions << rev[:revision]
