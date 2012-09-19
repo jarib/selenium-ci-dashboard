@@ -117,7 +117,7 @@ Graphs.prototype.renderGraph = function(selector, data) {
   this.chart = new Highcharts.Chart({
     chart: {
         renderTo: document.querySelector(selector),
-        type: 'areaspline'
+        type: 'area'
     },
     title: {
         text: 'Builds'
