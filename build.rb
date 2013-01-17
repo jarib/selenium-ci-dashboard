@@ -45,7 +45,15 @@ class Build
   end
 
   def user
-    changeset_item && changeset_item['user']
+    return unless changeset_item 
+
+    user = changeset_item['user']
+
+    unless user
+      changeset_item['author'] && changeset_item['author']['fullName']
+    end
+
+    user
   end
 
   def message
