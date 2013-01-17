@@ -52,6 +52,7 @@ class App < Sinatra::Base
     {
       :builds         => builds,
       :revision       => revision,
+      :short_revision => revision[0,7],
       :row_headers    => matrix.row_headers,
       :column_headers => matrix.column_headers,
       :rows           => matrix.rows,
@@ -146,11 +147,12 @@ class App < Sinatra::Base
 
       revisions.sort.reverse.map.with_index do |r, idx|
         {
-          :revision => r,
-          :user     => users[r],
-          :building => building[r],
-          :counts   => build_counts[r].map { |k,v| {:key => k, :value => v, :class => class_for_build_state(k) }  },
-          :class    => idx <= 6 ? '' : 'hidden-phone'
+          :revision       => r,
+          :short_revision => r[0,7],
+          :user           => users[r],
+          :building       => building[r],
+          :counts         => build_counts[r].map { |k,v| {:key => k, :value => v, :class => class_for_build_state(k) }  },
+          :class          => idx <= 6 ? '' : 'hidden-phone'
         }
       end
     end
@@ -263,15 +265,16 @@ class App < Sinatra::Base
 
     def as_json(opts = {})
       {
-       :revision => revision,
-       :state    => state,
-       :params   => params.map { |k,v| {:key => k, :val => v} },
-       :failed   => failed?,
-       :building => building?,
-       :url      => url,
-       :name     => name,
-       :type     => type,
-       :message  => message
+       :revision       => revision,
+       :short_revision => revision[0,7],
+       :state          => state,
+       :params         => params.map { |k,v| {:key => k, :val => v} },
+       :failed         => failed?,
+       :building       => building?,
+       :url            => url,
+       :name           => name,
+       :type           => type,
+       :message        => message
       }
     end
 
