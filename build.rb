@@ -11,7 +11,8 @@ class Build
       :revision     => revision,
       :url          => url,
       :params       => params,
-      :message      => message
+      :message      => message,
+      :timestamp    => timestamp
     }
   end
 
@@ -21,6 +22,14 @@ class Build
       :building
     else
       result.downcase.to_sym
+    end
+  end
+
+  def timestamp
+    if @data['timestamp']
+      Time.at(@data['timestamp'].to_i / 1000)
+    else
+      Time.now
     end
   end
 
@@ -45,7 +54,7 @@ class Build
   end
 
   def user
-    return unless changeset_item 
+    return unless changeset_item
 
     user = changeset_item['user']
 

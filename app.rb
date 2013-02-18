@@ -15,7 +15,7 @@ class App < Sinatra::Base
   ]
 
   configure do
-    settings.db.collection('builds').ensure_index 'revision'
+    settings.db.collection('builds').ensure_index 'timestamp'
   end
 
   get "/" do
@@ -111,15 +111,15 @@ class App < Sinatra::Base
     end
 
     def latest_rev
-      revs(1).shift
+      timestamps(1).shift
     end
 
-    def revs(last = 10)
-      revs = db("builds").distinct('revision')
-      revs.delete(nil)
-      revs.delete('unknown')
+    def timestamps(last = 10)
+      timestamps = db("builds").distinct('timestamp')
+      timestamps.delete(nil)
+      timestamps.delete('unknown')
 
-      revs.map { |e| e.to_s }.sort.last(last)
+      timestamps.sort.last(last)
     end
 
     def db(collection)
@@ -127,8 +127,8 @@ class App < Sinatra::Base
     end
 
     def fetch_revision_list
-      revisions = revs(50)
-      builds = revisions.map { |r| db("builds").find(:revision => r).to_a }.flatten
+      timestamps = timestamps(50)
+      builds = timestamps.flat_map { |r| db("builds").find(:timestamp => r).to_a }
 
       users = {}
       building = {}
@@ -145,13 +145,15 @@ class App < Sinatra::Base
         counts[state] += 1
       end
 
-      revisions.sort.reverse.map.with_index do |r, idx|
+      builds.sort_by { |e| e['timestamp'] }.reverse.map.with_index do |build, idx|
+        rev = build['revision']
+
         {
-          :revision       => r,
-          :short_revision => r[0,7],
-          :user           => users[r],
-          :building       => building[r],
-          :counts         => build_counts[r].map { |k,v| {:key => k, :value => v, :class => class_for_build_state(k) }  },
+          :revision       => rev,
+          :short_revision => rev[0,7],
+          :user           => users[rev],
+          :building       => building[rev],
+          :counts         => build_counts[rev].map { |k,v| {:key => k, :value => v, :class => class_for_build_state(k) }  },
           :class          => idx <= 6 ? '' : 'hidden-phone'
         }
       end
@@ -164,7 +166,7 @@ class App < Sinatra::Base
 
       failed_builds.each do |view|
         view.params.each do |key, value|
-          next if key == "svnrevision"
+          next if ["svnrevision", 'SAUCE_BUILD_NUMBER'].include? key
           counts[[key.downcase, value.downcase]] += 1
         end
       end
