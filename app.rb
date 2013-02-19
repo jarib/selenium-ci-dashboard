@@ -145,7 +145,10 @@ class App < Sinatra::Base
         counts[state] += 1
       end
 
-      builds.sort_by { |e| e['timestamp'] }.reverse.map.with_index do |build, idx|
+      grouped = builds.group_by { |e| e['timestamp'] }
+
+      timestamps.map.with_index do |timestamp, idx|
+        build = grouped[timestamp].first
         rev = build['revision']
 
         {
