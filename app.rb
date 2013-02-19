@@ -5,6 +5,18 @@ require 'pp'
 require 'json'
 require 'uri'
 
+module Enumerable
+  def uniq_by(&blk)
+    res = {}
+
+    each do |e|
+      res[yield(e)] ||= e
+    end
+
+    res.values
+  end
+end
+
 class App < Sinatra::Base
   set :db, Mongo::Connection.new.db("selenium")
   set :views, File.expand_path("../views", __FILE__)
@@ -111,15 +123,12 @@ class App < Sinatra::Base
     end
 
     def latest_rev
-      timestamps(1).shift
+      revs(1).shift
     end
 
-    def timestamps(last = 10)
-      timestamps = db("builds").distinct('timestamp')
-      timestamps.delete(nil)
-      timestamps.delete('unknown')
-
-      timestamps.sort.last(last)
+    def revs(last = 10)
+      builds = db("builds").find({:timestamp => {:$gt => Time.now - 60*60*24*31}}, :fields => [:revision, :timestamp])
+      builds.uniq_by { |e| e['revision'] }.sort_by { |e| e['timestamp'] }.map { |e| e['revision'] }.reverse
     end
 
     def db(collection)
@@ -127,11 +136,11 @@ class App < Sinatra::Base
     end
 
     def fetch_revision_list
-      timestamps = timestamps(50)
-      builds = timestamps.flat_map { |r| db("builds").find(:timestamp => r).to_a }
+      revs   = revs(50)
+      builds = db("builds").find(:revision => {:$in => revs}).to_a
 
-      users = {}
-      building = {}
+      users        = {}
+      building     = {}
       build_counts = Hash.new { |hash, rev| hash[rev] = Hash.new(0) }
 
       builds.each do |b|
@@ -145,12 +154,7 @@ class App < Sinatra::Base
         counts[state] += 1
       end
 
-      grouped = builds.group_by { |e| e['timestamp'] }
-
-      timestamps.map.with_index do |timestamp, idx|
-        build = grouped[timestamp].first
-        rev = build['revision']
-
+      revs.map.with_index do |rev, idx|
         {
           :revision       => rev,
           :short_revision => rev[0,7],

@@ -145,8 +145,7 @@ Graphs.prototype.renderGraph = function(selector, data) {
     tooltip: {
         formatter: function() {
           // console.log(this);
-            return 'r'+
-                this.x +': '+ Highcharts.numberFormat(this.y, 0, ',') + ' build' + (this.y != 1 ? 's' : '');
+            return this.x.slice(0,7) +': '+ Highcharts.numberFormat(this.y, 0, ',') + ' build' + (this.y != 1 ? 's' : '');
         }
     },
     plotOptions: {
