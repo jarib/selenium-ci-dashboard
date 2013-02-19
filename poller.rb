@@ -51,7 +51,7 @@ class Poller
     @log.info "checking queued build #{job}"
 
     url = job['url']
-    api = URI.join(url, "api/json?tree=timestamp,fullDisplayName,actions[parameters[name,value]],url,result,building,changeSet[items[user,revision,msg],revisions[revision]]").to_s
+    api = URI.join(url, "api/json?tree=timestamp,fullDisplayName,actions[parameters[name,value]],url,result,building,changeSet[items[author[fullName],revision,msg],revisions[revision]]").to_s
     fetch api do |data, error|
       if error && error =~ /404/
         remove_from_queue url
