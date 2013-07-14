@@ -17,7 +17,7 @@ GEM
       eventmachine (>= 0.12.10)
     em-socksify (0.1.0)
       eventmachine
-    eventmachine (1.0.0.beta.4)
+    eventmachine (1.0.3)
     http_parser.rb (0.5.3)
     json (1.7.7)
     mongo (1.5.2)
