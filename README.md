@@ -8,7 +8,7 @@ Four things need to be set up for the dashboard to work:
 $ curl -XPOST -d http://jenkins.example.com/job/Build%20All%20Java/5194/ http://dashboard.example.com/build
 ```
 
-2. The dashboard uses MongoDB for storage. The app expects it to run on the default post, at localhost:27017.
+2. The dashboard uses MongoDB for storage. The app expects it to run on the default port, at `localhost:27017`.
 
 3. The actual dashboard is a [Sinatra](http://www.sinatrarb.com/) web app, and can be run like any Rack application (e.g. using Passenger, Unicorn). To run it standalone, do:
 
